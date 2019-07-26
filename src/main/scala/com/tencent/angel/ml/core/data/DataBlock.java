@@ -1,7 +1,6 @@
 package com.tencent.angel.ml.core.data;
 
 
-import com.tencent.angel.ml.core.utils.MLException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -77,7 +76,7 @@ public abstract class DataBlock<VALUE> {
     return (float) readIndex / writeIndex;
   }
 
-  public VALUE loopingRead() throws IOException {
+  public VALUE loopingRead() throws Exception {
     VALUE data = this.read();
     if (data == null) {
       resetReadIndex();
@@ -87,7 +86,7 @@ public abstract class DataBlock<VALUE> {
     if (data != null)
       return data;
     else
-      throw new MLException("Train data storage is empty or corrupted.");
+      throw new Exception("Train data storage is empty or corrupted.");
   }
 
   @Override public String toString() {
