@@ -9,7 +9,7 @@ import com.tencent.angel.mlcore.utils.{MLException, RowTypeUtils}
 import com.tencent.angel.mlcore.variable._
 
 
-private[mlcore] class LocalVariableProvider(dataFormat: String, modelType: RowType)(
+class LocalVariableProvider(dataFormat: String, modelType: RowType)(
   implicit conf: SharedConf, variableManager: VariableManager) extends VariableProvider {
   override def getEmbedVariable(name: String, numRows: Long, numCols: Long, updater: Updater,
                                 formatClassName: String, placeHolder: PlaceHolder, taskNum: Int = 1): EmbedVariable = {

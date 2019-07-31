@@ -12,7 +12,7 @@ import com.tencent.angel.mlcore.variable.VoidType
 import org.apache.commons.logging.{Log, LogFactory}
 import org.apache.hadoop.conf.Configuration
 
-private[mlcore] class LocalLearner(conf: SharedConf) extends Learner {
+class LocalLearner(conf: SharedConf) extends Learner {
   private val LOG: Log = LogFactory.getLog(classOf[LocalLearner])
   private implicit val sharedConf: SharedConf = conf
 

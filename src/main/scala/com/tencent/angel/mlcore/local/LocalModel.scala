@@ -9,7 +9,7 @@ import com.tencent.angel.mlcore.utils.JsonUtils
 import com.tencent.angel.mlcore.variable.{VariableManager, VariableProvider}
 
 
-private[mlcore] class LocalModel(conf: SharedConf) extends GraphModel(conf) {
+class LocalModel(conf: SharedConf) extends GraphModel(conf) {
   private implicit val sharedConf: SharedConf = conf
 
   override protected implicit val variableManager: VariableManager = new LocalVariableManager(isSparseFormat, conf)

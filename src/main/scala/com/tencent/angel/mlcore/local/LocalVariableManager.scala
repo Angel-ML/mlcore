@@ -8,7 +8,7 @@ import org.apache.hadoop.conf.Configuration
 
 import scala.collection.JavaConversions._
 
-private[mlcore] class LocalVariableManager(isSparseFormat: Boolean, conf: SharedConf)
+class LocalVariableManager(isSparseFormat: Boolean, conf: SharedConf)
   extends VariableManager(isSparseFormat, conf) {
 
   override def createALL[T](envCtx: EnvContext[T]): Unit = {

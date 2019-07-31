@@ -11,7 +11,7 @@ import org.json4s.native.JsonMethods._
 
 import scala.reflect.ClassTag
 
-private[mlcore] class LocalOptimizerProvider(conf: SharedConf) extends OptimizerProvider {
+class LocalOptimizerProvider(conf: SharedConf) extends OptimizerProvider {
   private implicit val formats: DefaultFormats.type = DefaultFormats
   private implicit val sharedConf: SharedConf = conf
 
