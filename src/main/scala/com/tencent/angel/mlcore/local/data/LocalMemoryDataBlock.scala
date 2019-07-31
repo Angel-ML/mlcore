@@ -9,7 +9,7 @@ import com.tencent.angel.mlcore.data.DataBlock
 import org.apache.commons.logging.{Log, LogFactory}
 import org.ehcache.sizeof.SizeOf
 
-private[mlcore] class LocalMemoryDataBlock(initSize: Int, maxUseMemroy: Long) extends DataBlock[LabeledData] {
+class LocalMemoryDataBlock(initSize: Int, maxUseMemroy: Long) extends DataBlock[LabeledData] {
   private val LOG: Log = LogFactory.getLog(classOf[LocalMemoryDataBlock])
 
   private var estimateSampleNumber: Int = 100
