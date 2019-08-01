@@ -6,7 +6,7 @@
     <groupId>com.tencent.angel</groupId>
     <artifactId>angel-mlcore</artifactId>
     <packaging>jar</packaging>
-    <version>0.1.0</version>
+    <version>0.1.0-SNAPSHOT</version>
     <name>angel-mlcore</name>
 
     <properties>
