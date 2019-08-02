@@ -2,7 +2,7 @@ package com.tencent.angel.mlcore
 
 import com.tencent.angel.ml.math2.utils.LabeledData
 import com.tencent.angel.mlcore.conf.{MLCoreConf, SharedConf}
-import com.tencent.angel.mlcore.data.DataBlock
+import com.tencent.angel.ml.math2.utils.DataBlock
 import com.tencent.angel.mlcore.local.LocalLearner
 import com.tencent.angel.mlcore.local.data.LocalDataReader
 import com.tencent.angel.mlcore.utils.JsonUtils

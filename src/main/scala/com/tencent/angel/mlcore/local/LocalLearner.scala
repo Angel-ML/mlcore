@@ -1,9 +1,9 @@
 package com.tencent.angel.mlcore.local
 
-import com.tencent.angel.ml.math2.utils.LabeledData
+import com.tencent.angel.ml.math2.utils.{DataBlock, LabeledData}
 import com.tencent.angel.mlcore.{GraphModel, Learner}
 import com.tencent.angel.mlcore.conf.{MLCoreConf, SharedConf}
-import com.tencent.angel.mlcore.data.{DataBlock, DataReader}
+import com.tencent.angel.mlcore.data.DataReader
 import com.tencent.angel.mlcore.network.Graph
 import com.tencent.angel.mlcore.network.layers.unary.KmeansInputLayer
 import com.tencent.angel.mlcore.optimizer.decayer.{StepSizeScheduler, WarmRestarts}

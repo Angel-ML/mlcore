@@ -1,10 +1,10 @@
 package com.tencent.angel.mlcore.local.data
 
 
-import com.tencent.angel.ml.math2.utils.LabeledData
+import com.tencent.angel.ml.math2.utils.{DataBlock, LabeledData}
 import com.tencent.angel.mlcore.conf.SharedConf
 import com.tencent.angel.mlcore.data.DataReader.BlockType.BlockType
-import com.tencent.angel.mlcore.data.{DataBlock, DataReader}
+import com.tencent.angel.mlcore.data.DataReader
 
 import scala.io.Source
 

@@ -6,7 +6,7 @@ import com.tencent.angel.ml.math2.ufuncs.Ufuncs
 import com.tencent.angel.ml.math2.utils.LabeledData
 import com.tencent.angel.ml.math2.vector.{IntDoubleVector, IntFloatVector}
 import com.tencent.angel.mlcore.conf.MLCoreConf
-import com.tencent.angel.mlcore.data.DataBlock
+import com.tencent.angel.ml.math2.utils.DataBlock
 import com.tencent.angel.mlcore.network.layers.{InputLayer, Trainable}
 import com.tencent.angel.mlcore.network.{Graph, TransFunc}
 import com.tencent.angel.mlcore.optimizer.Optimizer

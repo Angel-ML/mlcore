@@ -3,7 +3,7 @@ package com.tencent.angel.mlcore.local
 import com.tencent.angel.ml.math2.utils.LabeledData
 import com.tencent.angel.mlcore.{GraphModel, PredictResult}
 import com.tencent.angel.mlcore.conf.SharedConf
-import com.tencent.angel.mlcore.data.DataBlock
+import com.tencent.angel.ml.math2.utils.DataBlock
 import com.tencent.angel.mlcore.network.Graph
 import com.tencent.angel.mlcore.utils.JsonUtils
 import com.tencent.angel.mlcore.variable.{VariableManager, VariableProvider}

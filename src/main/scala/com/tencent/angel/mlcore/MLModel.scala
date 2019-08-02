@@ -6,7 +6,7 @@ import com.tencent.angel.ml.math2.matrix.Matrix
 import com.tencent.angel.ml.math2.utils.{LabeledData, RowType}
 import com.tencent.angel.ml.math2.vector.Vector
 import com.tencent.angel.mlcore.conf.SharedConf
-import com.tencent.angel.mlcore.data.DataBlock
+import com.tencent.angel.ml.math2.utils.DataBlock
 import com.tencent.angel.mlcore.network.EnvContext
 import com.tencent.angel.mlcore.utils.RowTypeUtils
 import com.tencent.angel.mlcore.variable.{Variable, VariableManager, VariableProvider}

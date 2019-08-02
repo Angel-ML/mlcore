@@ -1,6 +1,6 @@
 package com.tencent.angel.mlcore.data
 
-import com.tencent.angel.ml.math2.utils.LabeledData
+import com.tencent.angel.ml.math2.utils.{DataBlock, LabeledData}
 import com.tencent.angel.mlcore.conf.{MLCoreConf, SharedConf}
 import org.apache.commons.logging.LogFactory
 

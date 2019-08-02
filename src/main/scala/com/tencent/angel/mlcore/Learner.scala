@@ -2,7 +2,7 @@ package com.tencent.angel.mlcore
 
 import org.apache.commons.logging.LogFactory
 import com.tencent.angel.ml.math2.utils.LabeledData
-import com.tencent.angel.mlcore.data.DataBlock
+import com.tencent.angel.ml.math2.utils.DataBlock
 import com.tencent.angel.mlcore.network.Graph
 import com.tencent.angel.mlcore.optimizer.decayer.StepSizeScheduler
 
