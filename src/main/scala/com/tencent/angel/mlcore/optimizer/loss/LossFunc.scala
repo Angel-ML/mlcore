@@ -23,7 +23,7 @@ import com.tencent.angel.mlcore.utils.JsonUtils._
 import com.tencent.angel.ml.math2.MFactory
 import com.tencent.angel.ml.math2.matrix.{BlasDoubleMatrix, BlasFloatMatrix, BlasMatrix, Matrix}
 import com.tencent.angel.ml.math2.ufuncs.{LossFuncs, Ufuncs}
-import com.tencent.angel.ml.math2.vector.IntDoubleVector
+import com.tencent.angel.ml.math2.vector.{IntDoubleVector, IntFloatVector}
 import com.tencent.angel.mlcore
 import com.tencent.angel.mlcore.PredictResult
 import com.tencent.angel.mlcore.network.Graph
@@ -377,9 +377,9 @@ class SoftmaxLoss extends LossFunc {
           result.append(PredictResult(LossFunc.getSid(idx, attachedArr), pred, proba, label, trueLabel, attached))
         }
       case m: BlasFloatMatrix =>
-        val predlabels = m.argmax(1).asInstanceOf[IntDoubleVector]
+        val predlabels = m.argmax(1).asInstanceOf[IntFloatVector]
         predlabels.getStorage.getValues.zipWithIndex.foreach { case (label, idx) =>
-          val pred = modelOut.asInstanceOf[BlasDoubleMatrix].get(idx, label.toInt)
+          val pred = modelOut.asInstanceOf[BlasFloatMatrix].get(idx, label.toInt)
           val proba = m.get(idx, label.toInt)
           val attached = m.get(idx, labels(idx).toInt)
           val trueLabel = labels(idx)
