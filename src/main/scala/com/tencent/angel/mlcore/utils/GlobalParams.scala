@@ -48,6 +48,7 @@ object GlobalKeys {
   val numUpdatePerEpoch: String = "numupdateperepoch"
   val batchSize: String = "batchsize"
   val decay: String = "decay"
+  val c: String = "kmeansc"
 }
 
 
@@ -103,13 +104,15 @@ class TrainParams(val epoch: Option[Int],
                   val numUpdatePerEpoch: Option[Int],
                   val batchSize: Option[Int],
                   val lr: Option[Double],
-                  val decay: Option[Double]) {
+                  val decay: Option[Double],
+                  val c: Option[Double]) {
   def updateConf(conf: SharedConf): Unit = {
     epoch.foreach(v => conf.setInt(MLCoreConf.ML_EPOCH_NUM, v))
     numUpdatePerEpoch.foreach(v => conf.setInt(MLCoreConf.ML_NUM_UPDATE_PER_EPOCH, v))
     batchSize.foreach(v => conf.setInt(MLCoreConf.ML_MINIBATCH_SIZE, v))
     lr.foreach(v => conf.setDouble(MLCoreConf.ML_LEARN_RATE, v))
     decay.foreach(v => conf.setDouble(MLCoreConf.ML_LEARN_DECAY, v))
+    c.foreach(v => conf.setDouble(MLCoreConf.KMEANS_C, v))
   }
 }
 
@@ -118,14 +121,15 @@ object TrainParams {
 
   private[mlcore] def apply(json: JValue): TrainParams = {
     json match {
-      case JNothing => new TrainParams(None, None, None, None, None)
+      case JNothing => new TrainParams(None, None, None, None, None, None)
       case jast: JValue =>
         new TrainParams(
           extract[Int](jast, GlobalKeys.epoch),
           extract[Int](jast, GlobalKeys.numUpdatePerEpoch),
           extract[Int](jast, GlobalKeys.batchSize),
           extract[Double](jast, GlobalKeys.lr),
-          extract[Double](jast, GlobalKeys.decay)
+          extract[Double](jast, GlobalKeys.decay),
+          extract[Double](jast, GlobalKeys.c)
         )
     }
   }

@@ -5,8 +5,8 @@
     "validateratio": 0.1
   },
   "train": {
-    "epoch": 50,
-    "lr": 1.0
+    "epoch": 10,
+    "lr": 0.001
   },
   "model": {
     "modeltype": "T_DOUBLE_DENSE"
