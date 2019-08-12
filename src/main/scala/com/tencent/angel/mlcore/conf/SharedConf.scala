@@ -356,8 +356,9 @@ object SharedConf {
   def fromString(confString: String): SharedConf = synchronized {
 
     val sc = new SharedConf
+    val parsedObject = parse(confString)
 
-    parse(confString) match {
+    parsedObject match {
       case JObject(obj: List[JField]) =>
         obj.foreach{
           case (key, JString(value)) if ! key.equalsIgnoreCase("graphJson") =>
@@ -369,5 +370,19 @@ object SharedConf {
     }
 
     sc
+  }
+
+  def setGraphString(conf:SharedConf, graphString: String): Unit = {
+    val parsedObject = parse(graphString)
+    parsedObject match {
+      case JObject(obj: List[JField]) =>
+        obj.foreach{
+          case (key, JString(value)) if ! key.equalsIgnoreCase("graphJson") =>
+            conf.set(key, value)
+          case (key, value: JObject) if key.equalsIgnoreCase("graphJson")=>
+            conf.setJson(value)
+          case _ => throw new Exception("Shared Conf Error!")
+        }
+    }
   }
 }

@@ -4,15 +4,14 @@ import java.io.{BufferedReader, FileInputStream, IOException, InputStreamReader}
 import java.net.URI
 import java.util
 
-
 import com.tencent.angel.mlcore.conf.{MLCoreConf, SharedConf}
 import com.tencent.angel.mlcore.network.layers.leaf.{Embedding, SimpleInputLayer}
+import com.tencent.angel.mlcore.network.layers.multiary._
+import com.tencent.angel.mlcore.network.layers.unary._
+import com.tencent.angel.mlcore.network.layers._
 import com.tencent.angel.mlcore.network.{Graph, TransFunc}
-import com.tencent.angel.mlcore.network.layers.{InputLayer, JoinLayer, Layer, LinearLayer, LossLayer}
-import com.tencent.angel.mlcore.network.layers.multiary.{ConcatLayer, CrossLayer, DotPooling, MulPooling, SumPooling, WeightedSumLayer}
-import com.tencent.angel.mlcore.network.layers.unary.{BiInnerCross, BiInnerSumCross, BiInteractionCross, BiInteractionCrossTiled, FCLayer, KmeansInputLayer, ParamSharedFC}
-import com.tencent.angel.mlcore.optimizer.{Optimizer, OptimizerProvider}
 import com.tencent.angel.mlcore.optimizer.loss.LossFunc
+import com.tencent.angel.mlcore.optimizer.{Optimizer, OptimizerProvider}
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FSDataInputStream, FileSystem, Path}
 import org.json4s.DefaultFormats
@@ -71,40 +70,6 @@ object OptimizerKeys {
 
 object JsonUtils {
   private implicit val formats: DefaultFormats.type = DefaultFormats
-
-  private[mlcore] def extract[T: Manifest](jast: JValue, key: String, default: Option[T] = None): Option[T] = {
-    jast \ key match {
-      case JNothing => default
-      case value => Some(value.extract[T](formats, implicitly[Manifest[T]]))
-    }
-  }
-
-  def matchClassName[T: ClassTag](name: String): Boolean = {
-    val runtimeClassName = implicitly[ClassTag[T]].runtimeClass.getSimpleName
-
-    runtimeClassName.equalsIgnoreCase(name)
-  }
-
-  private[mlcore] def fieldEqualClassName[T: ClassTag](obj: JObject, fieldName: String = "type"): Boolean = {
-    val runtimeClassName = implicitly[ClassTag[T]].runtimeClass.getSimpleName
-
-    val name = extract[String](obj, fieldName)
-    if (name.isEmpty) {
-      false
-    } else {
-      runtimeClassName.equalsIgnoreCase(name.get)
-    }
-  }
-
-  private[mlcore] def J2Pretty(json: JValue): String = pretty(render(json))
-
-  private[mlcore] def json2String(obj: JValue): String = {
-    obj \ LayerKeys.optimizerKey match {
-      case JString(opt) => opt
-      case opt: JObject => J2Pretty(opt)
-      case _ => "Momentum"
-    }
-  }
 
   def string2Json(jsonstr: String): JValue = {
     try {
@@ -342,6 +307,143 @@ object JsonUtils {
     }
   }
 
+  def matchClassName[T: ClassTag](name: String): Boolean = {
+    val runtimeClassName = implicitly[ClassTag[T]].runtimeClass.getSimpleName
+
+    runtimeClassName.equalsIgnoreCase(name)
+  }
+
+  private def getOptimizerString(obj: JValue): String = {
+    obj \ LayerKeys.optimizerKey match {
+      case JString(opt) => opt
+      case opt: JObject => J2Pretty(opt)
+      case _ => "Momentum"
+    }
+  }
+
+  def parseAndUpdateJson(jsonFileName: String, conf: SharedConf, hadoopConf: Configuration): Unit = {
+    val sb = new mutable.StringBuilder()
+    if (jsonFileName.startsWith("hdfs://")) {
+      println("jsonFileName is " + jsonFileName)
+      var inputStream: FSDataInputStream = null
+      var bufferedReader: BufferedReader = null
+      try {
+        inputStream = HDFSUtil.getFSDataInputStream(jsonFileName, hadoopConf)
+        bufferedReader = new BufferedReader(new InputStreamReader(inputStream))
+        var lineTxt: String = bufferedReader.readLine()
+        while (lineTxt != null) {
+          sb.append(lineTxt.trim)
+          lineTxt = bufferedReader.readLine()
+        }
+      } catch {
+        case e: Exception => e.printStackTrace()
+      } finally {
+        if (bufferedReader != null) {
+          bufferedReader.close()
+        }
+        if (inputStream != null) {
+          HDFSUtil.close
+        }
+      }
+    } else {
+      val reader = new BufferedReader(new InputStreamReader(new FileInputStream(jsonFileName)))
+
+      var line = reader.readLine()
+      while (line != null) {
+        sb.append(line)
+        line = reader.readLine()
+      }
+
+      reader.close()
+    }
+    val jsonStr = sb.toString()
+
+    val jast = parse(jsonStr).asInstanceOf[JObject]
+    parseAndUpdateJson(jast, conf)
+
+    //    println(pretty(render(jast)))
+
+    //    (jast \ JsonTopKeys.data) match {
+    //      case JNothing =>
+    //      case obj: JObject => DataParams(obj).updateConf(conf)
+    //      case _ => throw MLException("Json format error!")
+    //    }
+    //
+    //    (jast \ JsonTopKeys.model) match {
+    //      case JNothing =>
+    //      case obj: JObject => ModelParams(obj).updateConf(conf)
+    //      case _ => throw MLException("Json format error!")
+    //    }
+    //
+    //    (jast \ JsonTopKeys.train) match {
+    //      case JNothing =>
+    //      case obj: JObject => TrainParams(obj).updateConf(conf)
+    //      case _ => throw MLException("Json format error!")
+    //    }
+    //
+    //    val default_optimizer = (jast \ JsonTopKeys.default_optimizer) match {
+    //      case JNothing => None
+    //      case obj: JValue => Some(obj)
+    //      case _ => throw MLException("Json format error!")
+    //    }
+    //
+    //    val default_trandfunc = (jast \ JsonTopKeys.default_trandfunc) match {
+    //      case JNothing => None
+    //      case obj: JValue => Some(obj)
+    //      case _ => throw MLException("Json format error!")
+    //    }
+    //
+    //    val json = (jast \ JsonTopKeys.layers) match {
+    //      case arr: JArray => jArray2JObject(arr, default_trandfunc, default_optimizer)(conf)
+    //      case obj: JObject => obj
+    //      case _ => throw MLException("Json format error!")
+    //    }
+    //
+    //    conf.setJson(json)
+  }
+
+  private[mlcore] def parseAndUpdateJson(jast: JObject, conf: SharedConf): Unit = {
+    // println(pretty(render(jast)))
+
+    (jast \ JsonTopKeys.data) match {
+      case JNothing =>
+      case obj: JObject => DataParams(obj).updateConf(conf)
+      case _ => throw MLException("Json format error!")
+    }
+
+    (jast \ JsonTopKeys.model) match {
+      case JNothing =>
+      case obj: JObject => ModelParams(obj).updateConf(conf)
+      case _ => throw MLException("Json format error!")
+    }
+
+    (jast \ JsonTopKeys.train) match {
+      case JNothing =>
+      case obj: JObject => TrainParams(obj).updateConf(conf)
+      case _ => throw MLException("Json format error!")
+    }
+
+    val default_optimizer = (jast \ JsonTopKeys.default_optimizer) match {
+      case JNothing => None
+      case obj: JValue => Some(obj)
+      case _ => throw MLException("Json format error!")
+    }
+
+    val default_trandfunc = (jast \ JsonTopKeys.default_trandfunc) match {
+      case JNothing => None
+      case obj: JValue => Some(obj)
+      case _ => throw MLException("Json format error!")
+    }
+
+    val json = (jast \ JsonTopKeys.layers) match {
+      case arr: JArray => jArray2JObject(arr, default_trandfunc, default_optimizer)(conf)
+      case obj: JObject => obj
+      case _ => throw MLException("Json format error!")
+    }
+
+    conf.setJson(json)
+  }
+
   // for compatible purpose -----------------------------------------------------------------------------------------
   private def jArray2JObject(jArray: JArray, default_trans: Option[JValue], default_optimizer: Option[JValue])(implicit conf: SharedConf): JObject = {
     val fields = jArray.arr.flatMap {
@@ -358,6 +460,24 @@ object JsonUtils {
     }
 
     JObject(fields)
+  }
+
+  private[mlcore] def fieldEqualClassName[T: ClassTag](obj: JObject, fieldName: String = "type"): Boolean = {
+    val runtimeClassName = implicitly[ClassTag[T]].runtimeClass.getSimpleName
+
+    val name = extract[String](obj, fieldName)
+    if (name.isEmpty) {
+      false
+    } else {
+      runtimeClassName.equalsIgnoreCase(name.get)
+    }
+  }
+
+  private[mlcore] def extract[T: Manifest](jast: JValue, key: String, default: Option[T] = None): Option[T] = {
+    jast \ key match {
+      case JNothing => default
+      case value => Some(value.extract[T](formats, implicitly[Manifest[T]]))
+    }
   }
 
   private def extendFCLayer(obj: JObject, default_trans: Option[JValue], default_optimizer: Option[JValue])(implicit conf: SharedConf): List[JField] = {
@@ -405,6 +525,13 @@ object JsonUtils {
       case _ => throw MLException("FCLayer Json error!")
     }
 
+  }
+
+  private def defaultOptJson(conf: SharedConf): JObject = {
+    val momentum: Double = conf.getDouble(MLCoreConf.ML_OPT_MOMENTUM_MOMENTUM,
+      MLCoreConf.DEFAULT_ML_OPT_MOMENTUM_MOMENTUM)
+
+    (OptimizerKeys.typeKey -> JString("Momentum")) ~ (OptimizerKeys.momentumKey -> JDouble(momentum))
   }
 
   private def extendSimpleInputLayer(obj: JObject, default_trans: Option[JValue], default_optimizer: Option[JValue])(implicit conf: SharedConf): List[JField] = {
@@ -456,7 +583,7 @@ object JsonUtils {
 
     var i: Int = 0
 
-    val zipped = (outputDims zip transFuncs zip weightDims) map { case ((a, b), c) => (a, b, c)}
+    val zipped = (outputDims zip transFuncs zip weightDims) map { case ((a, b), c) => (a, b, c) }
     zipped.map {
       case (outputDim: JInt, transFunc: JValue, weightDim: JValue) =>
         val newName: String = if (i + 1 == outputDims.size) {
@@ -487,101 +614,17 @@ object JsonUtils {
     List(JField(name, obj))
   }
 
-  private def defaultOptJson(conf: SharedConf): JObject = {
-    val momentum: Double = conf.getDouble(MLCoreConf.ML_OPT_MOMENTUM_MOMENTUM,
-      MLCoreConf.DEFAULT_ML_OPT_MOMENTUM_MOMENTUM)
+  //-----------------------------------------------------------------------------------------------------------------
 
-    (OptimizerKeys.typeKey -> JString("Momentum")) ~ (OptimizerKeys.momentumKey -> JDouble(momentum))
-  }
-
-  private def getOptimizerString(obj: JValue): String = {
+  private[mlcore] def json2String(obj: JValue): String = {
     obj \ LayerKeys.optimizerKey match {
       case JString(opt) => opt
       case opt: JObject => J2Pretty(opt)
       case _ => "Momentum"
     }
   }
-  //-----------------------------------------------------------------------------------------------------------------
 
-  def parseAndUpdateJson(jsonFileName: String, conf: SharedConf, hadoopConf: Configuration): Unit = {
-    val sb = new mutable.StringBuilder()
-    if (jsonFileName.startsWith("hdfs://")) {
-      println("jsonFileName is " + jsonFileName)
-      var inputStream: FSDataInputStream = null
-      var bufferedReader: BufferedReader = null
-      try {
-        inputStream = HDFSUtil.getFSDataInputStream(jsonFileName, hadoopConf)
-        bufferedReader = new BufferedReader(new InputStreamReader(inputStream))
-        var lineTxt: String = bufferedReader.readLine()
-        while (lineTxt != null) {
-          sb.append(lineTxt.trim)
-          lineTxt = bufferedReader.readLine()
-        }
-      } catch {
-        case e: Exception => e.printStackTrace()
-      } finally {
-        if (bufferedReader != null) {
-          bufferedReader.close()
-        }
-        if (inputStream != null) {
-          HDFSUtil.close
-        }
-      }
-    } else {
-      val reader = new BufferedReader(new InputStreamReader(new FileInputStream(jsonFileName)))
-
-      var line = reader.readLine()
-      while (line != null) {
-        sb.append(line)
-        line = reader.readLine()
-      }
-
-      reader.close()
-    }
-    val jsonStr = sb.toString()
-
-    val jast = parse(jsonStr).asInstanceOf[JObject]
-
-    // println(pretty(render(jast)))
-
-    (jast \ JsonTopKeys.data) match {
-      case JNothing =>
-      case obj: JObject => DataParams(obj).updateConf(conf)
-      case _ => throw MLException("Json format error!")
-    }
-
-    (jast \ JsonTopKeys.model) match {
-      case JNothing =>
-      case obj: JObject => ModelParams(obj).updateConf(conf)
-      case _ => throw MLException("Json format error!")
-    }
-
-    (jast \ JsonTopKeys.train) match {
-      case JNothing =>
-      case obj: JObject => TrainParams(obj).updateConf(conf)
-      case _ => throw MLException("Json format error!")
-    }
-
-    val default_optimizer = (jast \ JsonTopKeys.default_optimizer) match {
-      case JNothing => None
-      case obj: JValue => Some(obj)
-      case _ => throw MLException("Json format error!")
-    }
-
-    val default_trandfunc = (jast \ JsonTopKeys.default_trandfunc) match {
-      case JNothing => None
-      case obj: JValue => Some(obj)
-      case _ => throw MLException("Json format error!")
-    }
-
-    val json = (jast \ JsonTopKeys.layers) match {
-      case arr: JArray => jArray2JObject(arr, default_trandfunc, default_optimizer)(conf)
-      case obj: JObject => obj
-      case _ => throw MLException("Json format error!")
-    }
-
-    conf.setJson(json)
-  }
+  private[mlcore] def J2Pretty(json: JValue): String = pretty(render(json))
 }
 
 object HDFSUtil {
