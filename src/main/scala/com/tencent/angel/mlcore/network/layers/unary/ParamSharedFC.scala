@@ -87,7 +87,9 @@ class ParamSharedFC(name: String, outputDim: Int, inputLayer: Layer, transFunc: 
           }
           outputMatrix(row) = VFactory.compIntDoubleVector(partitionLength * weightDim, compVector)
         }
-        transFunc(MFactory.rbCompIntDoubleMatrix(outputMatrix))
+        val out = MatrixUtils.rbCompDense2Blas(MFactory.rbCompIntDoubleMatrix(outputMatrix))
+        MatrixUtils.blas2RBCompDense(transFunc(out).asInstanceOf[BlasFloatMatrix], weightDim)
+//        transFunc(MFactory.rbCompIntDoubleMatrix(outputMatrix))
       case "float" =>
         val inputData = input.asInstanceOf[RBCompIntFloatMatrix]
         val outputMatrix = new Array[CompIntFloatVector](batchSize)
@@ -100,7 +102,9 @@ class ParamSharedFC(name: String, outputDim: Int, inputLayer: Layer, transFunc: 
           }
           outputMatrix(row) = VFactory.compIntFloatVector(partitionLength * weightDim, compVector)
         }
-        transFunc(MFactory.rbCompIntFloatMatrix(outputMatrix))
+        val out = MatrixUtils.rbCompDense2Blas(MFactory.rbCompIntFloatMatrix(outputMatrix))
+        MatrixUtils.blas2RBCompDense(transFunc(out).asInstanceOf[BlasFloatMatrix], weightDim)
+//        transFunc(MFactory.rbCompIntFloatMatrix(outputMatrix))
 
       case _ => throw MLException("Only Comp Matrix is Supported!")
     }
