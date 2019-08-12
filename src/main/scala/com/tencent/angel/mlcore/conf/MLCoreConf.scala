@@ -184,7 +184,7 @@ object MLCoreConf {
   val KMEANS_CENTER_NUM = "ml.kmeans.center.num"
   val DEFAULT_KMEANS_CENTER_NUM = 5
   val KMEANS_C = "ml.kmeans.c"
-  val DEFAULT_KMEANS_C = 0.5
+  val DEFAULT_KMEANS_C = 0.05
 }
 
 class MLCoreConf {}
