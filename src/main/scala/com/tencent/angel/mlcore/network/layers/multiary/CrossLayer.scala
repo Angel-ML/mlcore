@@ -78,7 +78,8 @@ class CrossLayer(name: String, outputDim: Int, inputLayers: Array[Layer], overri
       case _ => throw MLException("Only BlasMatrix is allowed!")
     }
     val temp = Ufuncs.dot(input_1, weight)
-    val net = input_0.mul(temp).add(bias).add(input_1)
+//    val net = input_0.mul(temp).add(bias).add(input_1)
+    val net = Ufuncs.mul(input_0, temp, true).add(bias).add(input_1)
     net
   }
 
@@ -96,7 +97,8 @@ class CrossLayer(name: String, outputDim: Int, inputLayers: Array[Layer], overri
       inputsData(0) -> inputsData(1)
     }
 
-    val gradOutput_0_ = gradInput.imul(Ufuncs.dot(inputsData_1, weight))
+//    val gradOutput_0_ = gradInput.imul(Ufuncs.dot(inputsData_1, weight))
+    val gradOutput_0_ = Ufuncs.mul(gradInput, Ufuncs.dot(inputsData_1, weight), true)
     val gradOutput_0 = if (middleCache_1 != null) {
       val temp = gradOutput_0_ match {
         case mat: BlasDoubleMatrix => MatrixUtils.blas2RBCompDense(mat, subDim_0)
