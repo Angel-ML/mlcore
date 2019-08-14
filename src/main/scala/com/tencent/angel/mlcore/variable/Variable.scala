@@ -271,4 +271,30 @@ abstract class Variable(val name: String,
       writeLock.unlock()
     }
   }
+
+  def release[T](envCtx: EnvContext[T]): Unit = {
+    writeLock.lock()
+
+    try {
+      if (state == VarState.Initialized || state == VarState.Ready) {
+        doRelease(envCtx)
+
+        // trans state
+        if (state == VarState.Initialized) {
+          transSate(VarState.Initialized, VarState.Expired)
+        } else if (state == VarState.Ready) {
+          transSate(VarState.Ready, VarState.Expired)
+        } else {
+          throw new Exception("state error!")
+        }
+
+      }
+
+      assert(state == VarState.Expired)
+    } finally {
+      writeLock.unlock()
+    }
+  }
+
+  protected def doRelease[T](envCtx: EnvContext[T]): Unit
 }

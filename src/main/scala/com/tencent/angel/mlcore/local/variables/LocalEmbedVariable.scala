@@ -3,13 +3,12 @@ package com.tencent.angel.mlcore.local.variables
 import java.lang.{Long => JLong}
 import java.util.{HashMap => JHashMap, Map => JMap}
 
-
 import com.tencent.angel.ml.math2.matrix.{MapMatrix, Matrix}
 import com.tencent.angel.ml.math2.storage._
 import com.tencent.angel.ml.math2.utils.RowType
 import com.tencent.angel.ml.math2.vector.Vector
 import com.tencent.angel.mlcore.conf.SharedConf
-import com.tencent.angel.mlcore.network.PlaceHolder
+import com.tencent.angel.mlcore.network.{EnvContext, PlaceHolder}
 import com.tencent.angel.mlcore.utils.ValueNotAllowed
 import com.tencent.angel.mlcore.variable.{EmbedUtils, EmbedVariable, Updater, VariableManager}
 

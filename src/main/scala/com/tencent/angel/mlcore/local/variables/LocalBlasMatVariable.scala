@@ -73,4 +73,15 @@ private[mlcore] class LocalBlasMatVariable(name: String,
       OptUtils.getRowAsMatrix(storage, numSlot, numRows, numCols.toInt).iadd(grad)
     }
   }
+
+  protected override def doRelease[T](envCtx: EnvContext[T]): Unit = {
+    assert(envCtx == null || envCtx.client == null)
+    storage = conf.valueType() match {
+      case "float" =>
+        MFactory.rbIntFloatMatrix(numSlot + 1, (numRows * numCols).toInt, StorageType.DENSE)
+      case "double" =>
+        MFactory.rbIntDoubleMatrix(numSlot + 1, (numRows * numCols).toInt, StorageType.DENSE)
+      case _ => throw ValueNotAllowed("Value Not Allowed, Only Float/Double Are Allowed!")
+    }
+  }
 }

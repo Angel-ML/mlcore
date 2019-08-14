@@ -159,4 +159,14 @@ abstract class VariableManager(val isSparseFormat: Boolean, val conf: SharedConf
       variable.save(envCtx, path)
     }
   }
+
+  def releaseALL[T](envCtx: EnvContext[T]): Unit
+
+  def release[T](name: String, envCtx: EnvContext[T]): Unit = {
+    val variable = getVariable(name)
+
+    if (variable != null) {
+      variable.release(envCtx)
+    }
+  }
 }

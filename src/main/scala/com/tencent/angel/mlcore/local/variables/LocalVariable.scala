@@ -7,7 +7,6 @@ import com.tencent.angel.ml.math2.utils.RowType
 import com.tencent.angel.mlcore.conf.SharedConf
 import com.tencent.angel.mlcore.network.EnvContext
 import com.tencent.angel.mlcore.variable.{Updater, VarState, Variable, VariableManager}
-import com.tencent.angel.model.{MatrixLoadContext, ModelTools}
 import org.apache.hadoop.conf.Configuration
 
 

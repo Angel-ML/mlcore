@@ -97,4 +97,23 @@ private[mlcore] class LocalMatVariable(name: String,
       OptUtils.getRowsAsMatrix(storage, numRows * numSlot, numRows * (numSlot + 1)).iadd(grad)
     }
   }
+
+  protected def doRelease[T](envCtx: EnvContext[T]): Unit = {
+    assert(envCtx == null || envCtx.client == null)
+    storage = rowType match {
+      case RowType.T_DOUBLE_DENSE =>
+        MFactory.rbIntDoubleMatrix((numSlot + 1) * numRows, numCols.toInt, StorageType.DENSE)
+      case RowType.T_DOUBLE_SPARSE =>
+        MFactory.rbIntDoubleMatrix((numSlot + 1) * numRows, numCols.toInt, StorageType.SPARSE)
+      case RowType.T_DOUBLE_SPARSE_LONGKEY =>
+        MFactory.rbLongDoubleMatrix((numSlot + 1) * numRows, numCols, StorageType.SPARSE)
+      case RowType.T_FLOAT_DENSE =>
+        MFactory.rbIntFloatMatrix((numSlot + 1) * numRows, numCols.toInt, StorageType.DENSE)
+      case RowType.T_FLOAT_SPARSE =>
+        MFactory.rbIntFloatMatrix((numSlot + 1) * numRows, numCols.toInt, StorageType.SPARSE)
+      case RowType.T_FLOAT_SPARSE_LONGKEY =>
+        MFactory.rbLongFloatMatrix((numSlot + 1) * numRows, numCols, StorageType.SPARSE)
+      case _ => throw ValueNotAllowed("Value Not Allowed, Only Float/Double Are Allowed!")
+    }
+  }
 }
