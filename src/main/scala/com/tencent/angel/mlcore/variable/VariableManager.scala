@@ -167,6 +167,11 @@ abstract class VariableManager(val isSparseFormat: Boolean, val conf: SharedConf
 
     if (variable != null) {
       variable.release(envCtx)
+      variables.remove(variable.name)
+
+      if (slots.contains(variable.name)) {
+        slots.remove(variable.name)
+      }
     }
   }
 }

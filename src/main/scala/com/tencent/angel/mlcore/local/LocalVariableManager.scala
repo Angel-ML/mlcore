@@ -46,5 +46,9 @@ class LocalVariableManager(isSparseFormat: Boolean, conf: SharedConf)
   override def saveALL[T](envCtx: EnvContext[T], path: String): Unit = {
     variables.values().foreach { variable => variable.save(envCtx, path) }
   }
+
+  override def releaseALL[T](envCtx: EnvContext[T]): Unit = {
+    variables.values().foreach { variable => variable.release(envCtx) }
+  }
 }
 

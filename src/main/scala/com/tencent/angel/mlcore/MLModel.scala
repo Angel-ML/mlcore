@@ -126,6 +126,12 @@ abstract class MLModel(val conf: SharedConf) {
     this
   }
 
+  def releaseMode[T](envCtx: EnvContext[T]): this.type = {
+    variableManager.releaseALL(envCtx)
+
+    this
+  }
+
   //---------------------Predict
   def predict(storage: DataBlock[LabeledData]): List[PredictResult]
 
