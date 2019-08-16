@@ -2,3 +2,10 @@
 *.log
 .idea
 target/
+
+
+# setting
+.settings/
+
+.project
+.classpath
