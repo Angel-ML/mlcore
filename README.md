@@ -5,7 +5,7 @@ a stand alone machine learning suite which can easy to integrate with angel ps
 <dependency>
     <groupId>com.tencent.angel</groupId>
     <artifactId>angel-mlcore</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 </dependency>
 ```
 
