@@ -289,7 +289,7 @@ class KmeansInputLayer(name: String,
     val layerJson = (LayerKeys.typeKey -> s"${this.getClass.getSimpleName}") ~
       (LayerKeys.outputDimKey -> outputDim) ~
       (LayerKeys.transFuncKey -> transFunc.toJson) ~
-      (LayerKeys.optimizerKey -> optimizer.toJson)
+      (LayerKeys.optimizerKey -> Optimizer.toJson(optimizer))
 
     JField(name, layerJson)
   }

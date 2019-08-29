@@ -112,7 +112,7 @@ class FCLayer(name: String, outputDim: Int, inputLayer: Layer, transFunc: TransF
       (LayerKeys.outputDimKey -> outputDim) ~
       (LayerKeys.inputLayerKey, JString(inputLayer.name)) ~
       (LayerKeys.transFuncKey -> transFunc.toJson) ~
-      (LayerKeys.optimizerKey -> optimizer.toJson)
+      (LayerKeys.optimizerKey -> Optimizer.toJson(optimizer))
 
     JField(name, layerJson)
   }

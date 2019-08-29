@@ -24,6 +24,7 @@ import com.tencent.angel.mlcore.network.{Dropout, Graph, Identity, PlaceHolder, 
 import com.tencent.angel.mlcore.network.layers.{Layer, LossLayer}
 import com.tencent.angel.mlcore.network.layers.multiary.SumPooling
 import com.tencent.angel.mlcore.network.layers.unary.FCLayer
+import com.tencent.angel.mlcore.optimizer.Optimizer
 import com.tencent.angel.mlcore.optimizer.loss.{CrossEntropyLoss, HingeLoss, HuberLoss, L2Loss, LogLoss, LossFunc, SoftmaxLoss}
 import com.tencent.angel.mlcore.utils.JsonUtils
 import com.tencent.angel.mlcore.variable.{VariableManager, VariableProvider}
@@ -39,7 +40,7 @@ class JsonTest extends FunSuite {
   test("Adam") {
     val adma = new Adam(0.001, 0.9, 0.99)
 
-    val json = adma.toJson
+    val json = Optimizer.toJson(adma)
 
     val jsonStr = compact(render(json))
     println(jsonStr)
@@ -51,7 +52,7 @@ class JsonTest extends FunSuite {
   test("Momentum") {
     val moment = new Momentum(0.001, 0.9)
 
-    val json = moment.toJson
+    val json = Optimizer.toJson(moment)
 
     val jsonStr = compact(render(json))
     println(jsonStr)
@@ -64,7 +65,7 @@ class JsonTest extends FunSuite {
   test("SGD") {
     val moment = new SGD(0.001)
 
-    val json = moment.toJson
+    val json = Optimizer.toJson(moment)
 
     val jsonStr = compact(render(json))
     println(jsonStr)

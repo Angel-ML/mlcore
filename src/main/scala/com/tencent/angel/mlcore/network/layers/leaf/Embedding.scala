@@ -72,7 +72,7 @@ class Embedding(name: String, outputDim: Int, val numFactors: Int,
     val layerJson = (LayerKeys.typeKey -> s"${this.getClass.getSimpleName}") ~
       (LayerKeys.outputDimKey -> outputDim) ~
       (LayerKeys.numFactorsKey -> numFactors) ~
-      (LayerKeys.optimizerKey -> optimizer.toJson)
+      (LayerKeys.optimizerKey -> Optimizer.toJson(optimizer))
 
     JField(name, layerJson)
   }

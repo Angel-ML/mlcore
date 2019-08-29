@@ -81,9 +81,6 @@ private[mlcore] class SGD(override var lr: Double) extends Optimizer {
     null.asInstanceOf[Future[T]]
   }
 
-  private[mlcore] override def toJson: JObject = {
-    JObject(JField(OptimizerKeys.typeKey, JString(s"${this.getClass.getSimpleName}")))
-  }
 }
 
 

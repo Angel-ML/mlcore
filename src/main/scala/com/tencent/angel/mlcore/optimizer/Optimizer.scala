@@ -19,9 +19,12 @@
 package com.tencent.angel.mlcore.optimizer
 
 import com.tencent.angel.mlcore.conf.SharedConf
+import com.tencent.angel.mlcore.utils.OptimizerKeys
 import com.tencent.angel.mlcore.variable.Updater
-import org.json4s.JsonAST.JObject
+import org.json4s.JsonAST.{JField, JObject, JString}
+import org.json4s.JsonDSL._
 
+import scala.collection.mutable.ListBuffer
 
 trait Optimizer extends Updater with Serializable {
   var lr: Double
@@ -50,11 +53,49 @@ trait Optimizer extends Updater with Serializable {
   def getRegL1Param: Double = this.regL1Param
 
   def getRegL2Param: Double = this.regL2Param
-
-  private[mlcore] def toJson: JObject
 }
 
 object Optimizer {
+
+  def toJson(optimizer:Optimizer): JObject = {
+    val buf = ListBuffer[JField]()
+
+    val name = optimizer.getClass.getSimpleName
+    buf.append(JField(OptimizerKeys.typeKey, JString(name)))
+
+    val fields = List(
+      OptimizerKeys.momentumKey,
+      OptimizerKeys.alphaKey,
+      OptimizerKeys.betaKey,
+      OptimizerKeys.gammaKey
+    )
+
+    fields.foreach{ key =>
+      try {
+        val field = optimizer.getClass.getDeclaredField(key)
+        field.setAccessible(true)
+        val value = field.getDouble(optimizer)
+        buf.append(JField(key, value))
+      } catch {
+        case e: NoSuchFieldException =>
+      }
+    }
+
+    val getRegL1Param = optimizer.getClass.getMethod("getRegL1Param")
+    val regL1 = getRegL1Param.invoke(optimizer).asInstanceOf[Double]
+    if (regL1 != 0.0) {
+      buf.append(JField(OptimizerKeys.reg1Key, regL1))
+    }
+
+    val getRegL2Param = optimizer.getClass.getMethod("getRegL2Param")
+    val regL2 = getRegL2Param.invoke(optimizer).asInstanceOf[Double]
+    if (regL1 != 0.0) {
+      buf.append(JField(OptimizerKeys.reg2Key, regL2))
+    }
+
+    JObject(buf.toList)
+  }
+
   def getOptimizerProvider(className: String, conf: SharedConf): OptimizerProvider = {
     val cls = Class.forName(className)
     val constructor = cls.getConstructor(classOf[SharedConf])

@@ -28,10 +28,6 @@ import org.json4s.JsonAST.{JField, JObject, JString}
 private [mlcore] class KmeansOptimizer extends Optimizer {
   override var lr: Double = _
 
-  private[mlcore] override def toJson: JsonAST.JObject = {
-    JObject(JField(OptimizerKeys.typeKey, JString(s"${this.getClass.getSimpleName}")))
-  }
-
   override val numSlot: Int = 1
 
   override def update[T](variable: Variable, epoch: Int, batchSize: Int): Future[T] = {

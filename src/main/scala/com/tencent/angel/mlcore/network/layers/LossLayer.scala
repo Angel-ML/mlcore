@@ -26,7 +26,7 @@ import org.json4s.JsonAST.{JField, JString}
 import org.json4s.JsonDSL._
 
 
-class LossLayer(name: String, inputLayer: Layer, val lossFunc: LossFunc)(implicit graph: Graph)
+class LossLayer(name: String, val inputLayer: Layer, val lossFunc: LossFunc)(implicit graph: Graph)
   extends Layer(name, -1) {
   inputLayer.addConsumer(this)
   this.addInput(inputLayer)

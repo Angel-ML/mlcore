@@ -78,8 +78,8 @@ object OptimizerKeys {
   val typeKey: String = "type"
   val alphaKey: String = "alpha"
   val betaKey: String = "beta"
-  val gammaKey: String = " gamma"
-  val momentumKey: String = " momentum"
+  val gammaKey: String = "gamma"
+  val momentumKey: String = "momentum"
   val reg1Key: String = "reg1"
   val reg2Key: String = "reg2"
 }
@@ -121,6 +121,7 @@ object JsonUtils {
         if (!jMap.contains(l.name)) {
           jMap.put(l.name, l.toJson)
         }
+        layer2Json(l.inputLayer)(jMap)
     }
   }
 

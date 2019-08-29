@@ -195,7 +195,7 @@ class ParamSharedFC(name: String, outputDim: Int, inputLayer: Layer, transFunc: 
       (LayerKeys.outputDimKey -> outputDim) ~
       (LayerKeys.inputLayerKey, JString(inputLayer.name)) ~
       (LayerKeys.transFuncKey -> transFunc.toJson) ~
-      (LayerKeys.optimizerKey -> optimizer.toJson) ~
+      (LayerKeys.optimizerKey -> Optimizer.toJson(optimizer)) ~
       (LayerKeys.weightDimKey -> weightDim)
 
     JField(name, layerJson)

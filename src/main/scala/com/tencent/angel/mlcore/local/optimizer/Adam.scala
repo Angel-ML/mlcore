@@ -29,7 +29,7 @@ import org.json4s.JsonAST.JObject
 import org.json4s.JsonDSL._
 
 
-private[mlcore] class Adam(override var lr: Double, beta: Double, gamma: Double) extends Optimizer {
+private[mlcore] class Adam(override var lr: Double, val beta: Double, val gamma: Double) extends Optimizer {
   override val numSlot: Int = 3
 
   override def update[T](variable: Variable, epoch: Int, batchSize: Int): Future[T] = {
@@ -83,12 +83,6 @@ private[mlcore] class Adam(override var lr: Double, beta: Double, gamma: Double)
         grad.imul(0.0)
     }
     null.asInstanceOf[Future[T]]
-  }
-
-  private[mlcore] override def toJson: JObject = {
-    (OptimizerKeys.typeKey -> s"${this.getClass.getSimpleName}") ~
-      (OptimizerKeys.betaKey -> beta) ~
-      (OptimizerKeys.gammaKey -> gamma)
   }
 }
 

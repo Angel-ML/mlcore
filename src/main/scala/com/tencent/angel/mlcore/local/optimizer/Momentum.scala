@@ -90,11 +90,6 @@ private[mlcore] class Momentum(override var lr: Double, val momentum: Double) ex
 
     null.asInstanceOf[Future[T]]
   }
-
-  private[mlcore] override def toJson: JObject = {
-    (OptimizerKeys.typeKey -> s"${this.getClass.getSimpleName}") ~
-      (OptimizerKeys.momentumKey -> momentum)
-  }
 }
 
 private[mlcore] object Momentum {
