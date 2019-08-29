@@ -223,9 +223,12 @@ class Graph(val provider: VariableProvider, val conf: SharedConf, val taskNum: I
     str.toString()
   }
 
-  def toJson: String = {
+  def toJsonStr: String = J2Pretty(toJson)
+
+  private[mlcore] def toJson: JObject = {
     implicit val jsonMap: mutable.HashMap[String, JField] = new mutable.HashMap[String, JField]()
     layer2Json(lossLayer.asInstanceOf[Layer])
-    J2Pretty(JObject(jsonMap.values.toList))
+
+    JObject(jsonMap.values.toList)
   }
 }

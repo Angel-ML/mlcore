@@ -18,15 +18,18 @@
 
 package com.tencent.angel.mlcore.utils
 
-import org.json4s.DefaultFormats
-import org.json4s.JsonAST.{JNothing, JValue}
+import org.json4s.{DefaultFormats, JField}
+import org.json4s.JsonAST.{JBool, JDouble, JInt, JNothing, JObject, JString, JValue}
 import com.tencent.angel.mlcore.utils.JsonUtils.extract
 import com.tencent.angel.mlcore.conf.{MLCoreConf, SharedConf}
+
+import scala.collection.mutable.ListBuffer
 
 object GlobalKeys {
   val defaultOptimizer: String = "default_optimizer"
   val defaultLossFunc: String = "default_lossfunc"
   val lr: String = "lr"
+  val data: String = "data"
   val model: String = "model"
   val train: String = "train"
   val path: String = "path"
@@ -98,6 +101,62 @@ object DataParams {
         )
     }
   }
+
+  private[mlcore] def toJson(conf: SharedConf): JObject = {
+    val buf = ListBuffer[JField]()
+
+    if (conf.hasKey(MLCoreConf.ML_TRAIN_DATA_PATH)) {
+      val path = conf.get(MLCoreConf.ML_TRAIN_DATA_PATH)
+      buf.append(JField(GlobalKeys.path, JString(path)))
+    }
+
+    if (conf.hasKey(MLCoreConf.ML_DATA_INPUT_FORMAT)) {
+      val format = conf.get(MLCoreConf.ML_DATA_INPUT_FORMAT)
+      buf.append(JField(GlobalKeys.format, JString(format)))
+    }
+
+    if (conf.hasKey(MLCoreConf.ML_FEATURE_INDEX_RANGE)) {
+      val indexRange = conf.getLong(MLCoreConf.ML_FEATURE_INDEX_RANGE)
+      buf.append(JField(GlobalKeys.indexRange, JString(indexRange.toString)))
+    }
+
+    if (conf.hasKey(MLCoreConf.ML_FIELD_NUM)) {
+      val numField = conf.getInt(MLCoreConf.ML_FIELD_NUM)
+      buf.append(JField(GlobalKeys.numField, JInt(numField)))
+    }
+
+    if (conf.hasKey(MLCoreConf.ML_VALIDATE_RATIO)) {
+      val validateRatio = conf.getDouble(MLCoreConf.ML_VALIDATE_RATIO)
+      buf.append(JField(GlobalKeys.validateRatio, JDouble(validateRatio)))
+    }
+
+    if (conf.hasKey(MLCoreConf.ML_BATCH_SAMPLE_RATIO)) {
+      val sampleRatio = conf.getDouble(MLCoreConf.ML_BATCH_SAMPLE_RATIO)
+      buf.append(JField(GlobalKeys.sampleRatio, JDouble(sampleRatio)))
+    }
+
+    if (conf.hasKey(MLCoreConf.ML_DATA_USE_SHUFFLE)) {
+      val useShuffle = conf.getBoolean(MLCoreConf.ML_DATA_USE_SHUFFLE)
+      buf.append(JField(GlobalKeys.useShuffle, JBool(useShuffle)))
+    }
+
+    if (conf.hasKey(MLCoreConf.ML_DATA_POSNEG_RATIO)) {
+      val posnegRatio = conf.getDouble(MLCoreConf.ML_DATA_POSNEG_RATIO)
+      buf.append(JField(GlobalKeys.posnegRatio, JDouble(posnegRatio)))
+    }
+
+    if (conf.hasKey(MLCoreConf.ML_DATA_LABEL_TRANS)) {
+      val transLabel = conf.getString(MLCoreConf.ML_DATA_LABEL_TRANS)
+      buf.append(JField(GlobalKeys.transLabel, JString(transLabel)))
+    }
+
+    if (conf.hasKey(MLCoreConf.ML_NUM_CLASS)) {
+      val numclass = conf.getInt(MLCoreConf.ML_NUM_CLASS)
+      buf.append(JField(GlobalKeys.numClass, JInt(numclass)))
+    }
+
+    JObject(buf.toList)
+  }
 }
 
 class TrainParams(val epoch: Option[Int],
@@ -133,6 +192,42 @@ object TrainParams {
         )
     }
   }
+
+  private[mlcore] def toJson(conf: SharedConf): JObject = {
+    val buf = ListBuffer[JField]()
+
+    if (conf.hasKey(MLCoreConf.ML_EPOCH_NUM)) {
+      val epoch = conf.getInt(MLCoreConf.ML_EPOCH_NUM)
+      buf.append(JField(GlobalKeys.epoch, JInt(epoch)))
+    }
+
+    if (conf.hasKey(MLCoreConf.ML_NUM_UPDATE_PER_EPOCH)) {
+      val numUpdatePerEpoch = conf.getInt(MLCoreConf.ML_NUM_UPDATE_PER_EPOCH)
+      buf.append(JField(GlobalKeys.numUpdatePerEpoch, JInt(numUpdatePerEpoch)))
+    }
+
+    if (conf.hasKey(MLCoreConf.ML_MINIBATCH_SIZE)) {
+      val batchSize = conf.getInt(MLCoreConf.ML_MINIBATCH_SIZE)
+      buf.append(JField(GlobalKeys.batchSize, JInt(batchSize)))
+    }
+
+    if (conf.hasKey(MLCoreConf.ML_LEARN_RATE)) {
+      val lr = conf.getDouble(MLCoreConf.ML_LEARN_RATE)
+      buf.append(JField(GlobalKeys.lr, JDouble(lr)))
+    }
+
+    if (conf.hasKey(MLCoreConf.ML_LEARN_DECAY)) {
+      val decay = conf.getDouble(MLCoreConf.ML_LEARN_DECAY)
+      buf.append(JField(GlobalKeys.decay, JDouble(decay)))
+    }
+
+    if (conf.hasKey(MLCoreConf.KMEANS_C)) {
+      val c = conf.getDouble(MLCoreConf.KMEANS_C)
+      buf.append(JField(GlobalKeys.c, JDouble(c)))
+    }
+
+    JObject(buf.toList)
+  }
 }
 
 class ModelParams(val loadPath: Option[String],
@@ -165,4 +260,36 @@ object ModelParams {
         )
     }
   }
+
+  private[mlcore] def toJson(conf: SharedConf): JObject = {
+    val buf = ListBuffer[JField]()
+
+    if (conf.hasKey(MLCoreConf.ML_LOAD_MODEL_PATH)) {
+      val loadPath = conf.getString(MLCoreConf.ML_LOAD_MODEL_PATH)
+      buf.append(JField(GlobalKeys.loadPath, JString(loadPath)))
+    }
+
+    if (conf.hasKey(MLCoreConf.ML_SAVE_MODEL_PATH)) {
+      val savePath = conf.getString(MLCoreConf.ML_SAVE_MODEL_PATH)
+      buf.append(JField(GlobalKeys.savePath, JString(savePath)))
+    }
+
+    if (conf.hasKey(MLCoreConf.ML_MODEL_TYPE)) {
+      val modelType = conf.getString(MLCoreConf.ML_MODEL_TYPE)
+      buf.append(JField(GlobalKeys.modelType, JString(modelType)))
+    }
+
+    if (conf.hasKey(MLCoreConf.ML_MODEL_SIZE)) {
+      val modelSize = conf.getLong(MLCoreConf.ML_MODEL_SIZE)
+      buf.append(JField(GlobalKeys.modelSize, JString(modelSize.toString)))
+    }
+
+    if (conf.hasKey(MLCoreConf.ML_BLOCK_SIZE)) {
+      val blockSize = conf.getInt(MLCoreConf.ML_BLOCK_SIZE)
+      buf.append(JField(GlobalKeys.blockSize, JInt(blockSize)))
+    }
+
+    JObject(buf.toList)
+  }
+
 }

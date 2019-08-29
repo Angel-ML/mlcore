@@ -37,6 +37,7 @@ import org.json4s.ParserUtil.ParseException
 import org.json4s.native.JsonMethods._
 
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
 
 object LayerKeys {
@@ -459,6 +460,24 @@ object JsonUtils {
     }
 
     conf.setJson(json)
+  }
+
+  def toJsonConfStr(conf: SharedConf, graph: Graph): String = {
+    val buf = ListBuffer[JField] ()
+
+    buf.append(JField(GlobalKeys.data, DataParams.toJson(conf)))
+
+    buf.append(JField(GlobalKeys.model, ModelParams.toJson(conf)))
+
+    buf.append(JField(GlobalKeys.train, TrainParams.toJson(conf)))
+
+    val layerArr = graph.toJson.obj.map{ case (key: String, layer: JValue) =>
+      layer
+    }
+
+    buf.append(JField("layers", JArray(layerArr)))
+
+    J2Pretty(JObject(buf.toList))
   }
 
   // for compatible purpose -----------------------------------------------------------------------------------------
