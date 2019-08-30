@@ -117,7 +117,7 @@ object DataParams {
 
     if (conf.hasKey(MLCoreConf.ML_FEATURE_INDEX_RANGE)) {
       val indexRange = conf.getLong(MLCoreConf.ML_FEATURE_INDEX_RANGE)
-      buf.append(JField(GlobalKeys.indexRange, JString(indexRange.toString)))
+      buf.append(JField(GlobalKeys.indexRange, JInt(indexRange)))
     }
 
     if (conf.hasKey(MLCoreConf.ML_FIELD_NUM)) {
@@ -281,7 +281,7 @@ object ModelParams {
 
     if (conf.hasKey(MLCoreConf.ML_MODEL_SIZE)) {
       val modelSize = conf.getLong(MLCoreConf.ML_MODEL_SIZE)
-      buf.append(JField(GlobalKeys.modelSize, JString(modelSize.toString)))
+      buf.append(JField(GlobalKeys.modelSize, JInt(modelSize)))
     }
 
     if (conf.hasKey(MLCoreConf.ML_BLOCK_SIZE)) {

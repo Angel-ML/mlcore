@@ -471,11 +471,12 @@ object JsonUtils {
 
     buf.append(JField(GlobalKeys.train, TrainParams.toJson(conf)))
 
-    val layerArr = graph.toJson.obj.map{ case (key: String, layer: JValue) =>
-      layer
-    }
+//    val layerArr = graph.toJson.obj.map{ case (key: String, layer: JObject) =>
+//      layer ~ ("name", key)
+//    }
 
-    buf.append(JField("layers", JArray(layerArr)))
+//  buf.append(JField("layers", JArray(layerArr)))
+    buf.append(JField("layers", graph.toJson))
 
     J2Pretty(JObject(buf.toList))
   }
