@@ -2,6 +2,7 @@
 *.log
 .idea
 *.iml
+*.crc
 target/
 
 

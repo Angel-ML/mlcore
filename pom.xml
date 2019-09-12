@@ -6,7 +6,7 @@
     <groupId>com.tencent.angel</groupId>
     <artifactId>angel-mlcore</artifactId>
     <packaging>jar</packaging>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
     <name>angel-mlcore</name>
 
     <properties>
@@ -79,7 +79,7 @@
         <dependency>
             <groupId>com.tencent.angel</groupId>
             <artifactId>angel-format</artifactId>
-            <version>${project.version}</version>
+            <version>0.1.1</version>
         </dependency>
     </dependencies>
 
